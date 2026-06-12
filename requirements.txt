@@ -1,0 +1,12 @@
+# Runtime uses Python standard library plus Poppler command line tools.
+# Required external binary in PATH:
+#   - pdftotext (Poppler)
+#   - pdftoppm (Poppler, for --ocr page rendering)
+# Optional OCR binary:
+#   - Tesseract OCR. On Windows the script also checks:
+#     C:\Program Files\Tesseract-OCR\tesseract.exe
+#
+# Optional future improvements:
+# pymupdf
+# pdfplumber
+# pytesseract
