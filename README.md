@@ -36,8 +36,8 @@ python convert_pdf.py sample_pdf_to_markdown_note.pdf -o outputs --ocr
 - 使用 `pdftotext -bbox-layout` 抽取文字层、词坐标和页面信息。
 - 按坐标合并物理行，识别页眉、页脚、附注标题、表格标题和简单表格。
 - Markdown 保留 `<!-- page: n -->`，表格输出为 Markdown table。
-- `blocks.json` 保留 page、type、bbox、source locator、表格行列。
-- 对文字层很少的页面标记 `needs_ocr: true`，并支持通过 `--ocr` 调用 Tesseract 尝试 OCR。
+- `blocks.json` 保留 page、type、bbox、source locator、表格行列，并为表格输出单元格级 `cells` 信息。
+- 对文字层很少的页面标记 `needs_ocr: true`，写入 `scanned_page` block，并支持通过 `--ocr` 调用 Tesseract 输出 OCR 候选文本。
 - 对含“合计”的数值表格做明细求和校验。
 
 ## 已知限制和风险
@@ -49,7 +49,7 @@ python convert_pdf.py sample_pdf_to_markdown_note.pdf -o outputs --ocr
 
 ## 实际用时
 
-实际用时：约 1 小时，包括环境检查、脚本实现、运行生成 outputs、人工抽查 Markdown/JSON/QA 报告、补充 Skill/SOP 和 README。
+实际用时：约 1.5 小时，包括环境检查、脚本实现、运行生成 outputs、人工抽查 Markdown/JSON/QA 报告、补充 Skill/SOP 和 README。
 
 ## AI / 智能体使用说明
 
@@ -63,8 +63,8 @@ python convert_pdf.py sample_pdf_to_markdown_note.pdf -o outputs --ocr
 人工/复核动作：
 
 - 用 `pdfinfo` 和 `pdftotext` 抽查 PDF 页数与文字层。
-- 检查 Markdown 是否包含页码、标题、表格和第 3 页扫描提示。
-- 检查 `blocks.json` 是否包含表格、bbox、source locator。
+- 检查 Markdown 是否包含页码、标题、表格、第 3 页扫描提示和 OCR 候选文本。
+- 检查 `blocks.json` 是否包含表格、单元格 bbox、source locator、扫描页 block 和 OCR 状态。
 - 检查 `qa_report.md` 是否明确说明扫描页、表格和人工复核风险。
 - 对表格合计数做自动校验，并在报告中呈现结果。
 
@@ -80,9 +80,9 @@ python convert_pdf.py sample_pdf_to_markdown_note.pdf -o outputs --ocr
 优先优化：
 
 - 接入 PyMuPDF/pdfplumber，读取字体、图片对象、表格线条，提高版面和表格识别稳定性。
-- 接入 OCR，并为扫描页输出 OCR 置信度、图片路径和人工确认状态。
+- 增强 OCR 流程：输出 OCR 置信度、截图路径、人工确认状态，并把 OCR 表格候选结构化为 rows/cells。
 - 增加跨页表格合并、表格标题归属、脚注归属和回归测试样例。
-- 增加 CLI 参数，例如 `--ocr`、`--keep-header-footer`、`--qa-only`。
+- 增加更多 CLI 参数，例如 `--keep-header-footer`、`--qa-only`、`--tessdata-dir`。
 
 ## Git 协作建议
 
